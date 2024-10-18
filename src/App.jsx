@@ -23,16 +23,13 @@ function App() {
       name: "Emma",
       city: "San Clemente, CA",
       longitude: 172.123901,
-      latitude: 984.1239018
+      latitude: -42.1239018
     }})
 
     if (error) {
       console.log(`Error: ${error.message}`)
     }
   }
-
-  getLocations()
-  insertLocation()
 
   return (
     <>
