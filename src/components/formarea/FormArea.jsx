@@ -2,6 +2,7 @@ import { useState } from "react";
 import Tooltip from "@mui/material/Tooltip";
 
 import infoPng from "../../assets/question.png";
+import Confirmation from "./Confirmation.jsx";
 
 import "./FormArea.css";
 
@@ -23,8 +24,6 @@ function FormArea({ supabase }) {
     e.preventDefault();
     const name = e.target[0].value;
     setSubmissionData({ ...submissionData, name });
-
-    console.log(name);
   }
 
   async function getGeocodingData(location, region, country) {
@@ -39,8 +38,9 @@ function FormArea({ supabase }) {
       });
 
       const data = await response.json();
-      console.log(data[0]);
-      return data[0];
+      console.log("Data:");
+      console.log(data);
+      return data;
     } catch (error) {
       console.log(error);
     }
@@ -52,20 +52,12 @@ function FormArea({ supabase }) {
     const region = e.target[1].value;
     const country = e.target[2].value;
 
-    const location = await getGeocodingData(city, region, country);
+    const locations = await getGeocodingData(city, region, country);
 
-    if (location) {
-      const submittedLocation = `${location.name || city}, ${
-        location.state ? location.state + ", " : ""
-      }${location.country || country}`;
-
-      console.log(`Submitted location: ${submittedLocation}`);
-
+    if (locations) {
       setSubmissionData((prevData) => ({
         ...prevData,
-        location: submittedLocation,
-        longitude: location.longitude || "N/A",
-        latitude: location.latitude || "N/A",
+        location: locations,
         confirmed: "ask",
       }));
     } else {
@@ -83,7 +75,7 @@ function FormArea({ supabase }) {
     }));
   }
 
-  async function onSubmissionConfirm() {
+  async function onSubmissionConfirm(updatedData = submissionData) {
     const date = new Date();
     const formattedDate = date.toLocaleDateString("en-US", {
       year: "numeric",
@@ -91,7 +83,7 @@ function FormArea({ supabase }) {
       day: "numeric",
     });
 
-    const { name, location, longitude, latitude } = submissionData;
+    const { name, location, longitude, latitude } = updatedData;
     const { data, error } = await supabase.from("locations").insert([
       {
         name,
@@ -198,17 +190,25 @@ function FormArea({ supabase }) {
         </form>
       )}
       {submissionData.confirmed === "ask" && (
-        <div className="confirmation">
-          <p className="confirm-ask">Is this the correct location to submit?</p>
-          <p className="location-info">{submissionData.location}</p>
-          <div className="confirmation-buttons">
-            <button className="confirm-btn" onClick={onSubmissionConfirm}>
-              Yes
-            </button>
-            <button className="decline-btn" onClick={onSubmissionDecline}>
-              No
-            </button>
+        <div className="confirmation-container">
+          <div className="confirmations">
+            {submissionData.location.length > 0 ? (
+              submissionData.location.map((location) => (
+                <Confirmation
+                  key={location.name + location.state + location.country}
+                  location={location}
+                  confirmSubmission={onSubmissionConfirm}
+                  setSubmissionData={setSubmissionData}
+                  getSubmissionData={() => submissionData} // Pass a function to fetch the latest state
+                />
+              ))
+            ) : (
+              <p>No locations found.</p>
+            )}
           </div>
+          <button className="decline-btn" onClick={onSubmissionDecline}>
+            Try again
+          </button>
         </div>
       )}
     </div>

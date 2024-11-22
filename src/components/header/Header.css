@@ -4,7 +4,6 @@
   border: 5px solid black;
   border-radius: 30px;
 
-  padding-bottom: 15px;
   padding-left: 20px;
   padding-right: 20px;
 
@@ -12,11 +11,15 @@
 }
 
 .header-text {
-  background-image: linear-gradient(180deg, #ffffff 40%, #7b7a7a 100%);
-  /* background-image: linear-gradient(45deg, #0766f3 13%, #c7d9f8 81%); */
-  color: transparent;
+  /* background-image: linear-gradient(180deg, #ffffff 50%, #333333 100%);
+  color: transparent; */
+
+  color: seashell;
+
   background-clip: text;
-  font-size: 50px;
+  font-size: 60px;
 
   padding: 10px;
+
+  /* background-image: linear-gradient(45deg, #0766f3 13%, #c7d9f8 81%); */
 }
