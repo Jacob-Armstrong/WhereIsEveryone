@@ -156,7 +156,13 @@ function FormArea({ supabase }) {
                 </Tooltip>
                 <label htmlFor="location">Nearest major city</label>
               </div>
-              <input type="text" minLength={1} maxLength={50} required />
+              <input
+                type="text"
+                minLength={1}
+                maxLength={50}
+                placeholder="San Francisco"
+                required
+              />
             </div>
             <div className="input-field">
               <div className="tooltip-div">
@@ -170,12 +176,23 @@ function FormArea({ supabase }) {
                 <label htmlFor="region">State or Region (optional)</label>
               </div>
 
-              <input type="text" minLength={1} maxLength={50} />
+              <input
+                type="text"
+                minLength={1}
+                maxLength={50}
+                placeholder="California"
+              />
             </div>
           </div>
           <div className="input-field">
             <label htmlFor="region">Country</label>
-            <input type="text" minLength={1} maxLength={50} required />
+            <input
+              type="text"
+              minLength={1}
+              maxLength={50}
+              placeholder="United States"
+              required
+            />
           </div>
           <button>Submit</button>
         </form>
