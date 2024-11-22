@@ -40,7 +40,6 @@ const Map = ({ cities }) => {
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow.default,
-        exclude: ["AQ"], // Exclude Antarctica
       })
     );
 
