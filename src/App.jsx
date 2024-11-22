@@ -3,15 +3,13 @@ import { createClient } from "@supabase/supabase-js";
 
 import Header from "./components/header/Header.jsx";
 import Map from "./components/map/Map.jsx";
+import FormArea from "./components/formarea/FormArea.jsx";
 
 import "./App.css";
 
-const supabaseURL = import.meta.env.VITE_DATABASE_URL;
-const supabaseKey = import.meta.env.VITE_DATABASE_KEY;
-const supabase = createClient(supabaseURL, supabaseKey);
-
 function App() {
   const [cities, setCities] = useState([]);
+
   // async function getLocations() {
   //   const { data } = await supabase.from("locations").select();
   //   console.log(data);
@@ -36,7 +34,7 @@ function App() {
     <div className="main">
       <Header />
       <Map cities={cities} handleCities={setCities} />
-      {/* <FormArea /> */}
+      <FormArea />
     </div>
   );
 }
