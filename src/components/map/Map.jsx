@@ -28,6 +28,23 @@ const Map = ({ cities, handleCities }) => {
       })
     );
 
+    // Create series for background fill
+    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+    var backgroundSeries = chart.series.push(
+      am5map.MapPolygonSeries.new(root, {})
+    );
+    backgroundSeries.mapPolygons.template.setAll({
+      fill: root.interfaceColors.get("alternativeBackground"),
+      fillOpacity: 0.2,
+      strokeOpacity: 0,
+    });
+
+    // Add background polygo
+    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
+    backgroundSeries.data.push({
+      geometry: am5map.getGeoRectangle(90, 180, -90, -180),
+    });
+
     chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
     // Create main polygon series for countries
@@ -38,6 +55,13 @@ const Map = ({ cities, handleCities }) => {
         exclude: ["AQ"], // Exclude Antarctica
       })
     );
+
+    polygonSeries.mapPolygons.template.setAll({
+      fill: root.interfaceColors.get("alternativeBackground"),
+      fillOpacity: 0.15,
+      strokeWidth: 0.5,
+      stroke: root.interfaceColors.get("background"),
+    });
 
     polygonSeries.mapPolygons.template.setAll({
       fill: am5.color(0xc2c0c0),
