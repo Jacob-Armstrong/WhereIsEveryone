@@ -1,17 +1,11 @@
 import { useState } from "react";
-import { createClient } from "@supabase/supabase-js";
 import Tooltip from "@mui/material/Tooltip";
 
 import infoPng from "../../assets/question.png";
 
 import "./FormArea.css";
 
-function FormArea() {
-  // Supabase setup
-  const supabaseURL = import.meta.env.VITE_DATABASE_URL;
-  const supabaseKey = import.meta.env.VITE_DATABASE_KEY;
-  const supabase = createClient(supabaseURL, supabaseKey);
-
+function FormArea({ supabase }) {
   // Api ninjas setup
   const geocodeURL = "https://api.api-ninjas.com/v1/geocoding";
   const geocodeKey = import.meta.env.VITE_APININJA_API_KEY;
@@ -61,9 +55,9 @@ function FormArea() {
     const location = await getGeocodingData(city, region, country);
 
     if (location) {
-      const submittedLocation = `${location.name || city}, 
-      ${location.state ? location.state + ", " : ""}
-      ${location.country || country}`;
+      const submittedLocation = `${location.name || city}, ${
+        location.state ? location.state + ", " : ""
+      }${location.country || country}`;
 
       console.log(`Submitted location: ${submittedLocation}`);
 
@@ -87,6 +81,40 @@ function FormArea() {
       longitude: "",
       confirmed: "no",
     }));
+  }
+
+  async function onSubmissionConfirm() {
+    const date = new Date();
+    const formattedDate = date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
+
+    const { name, location, longitude, latitude } = submissionData;
+    const { data, error } = await supabase.from("locations").insert([
+      {
+        name,
+        location,
+        longitude,
+        latitude,
+        date: formattedDate,
+      },
+    ]);
+
+    if (error) {
+      console.error(`Error: ${error.message}`);
+    } else {
+      console.log(data);
+      setSubmissionData({
+        name: "",
+        location: "",
+        date: "",
+        longitude: "",
+        latitude: "",
+        confirmed: "no",
+      });
+    }
   }
 
   return (
@@ -157,7 +185,9 @@ function FormArea() {
           <p className="confirm-ask">Is this the correct location to submit?</p>
           <p className="location-info">{submissionData.location}</p>
           <div className="confirmation-buttons">
-            <button className="confirm-btn">Yes</button>
+            <button className="confirm-btn" onClick={onSubmissionConfirm}>
+              Yes
+            </button>
             <button className="decline-btn" onClick={onSubmissionDecline}>
               No
             </button>

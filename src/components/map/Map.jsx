@@ -6,20 +6,13 @@ import am5themes_Animated from "@amcharts/amcharts5/themes/Animated";
 
 import "./Map.css";
 
-const Map = ({ cities, handleCities }) => {
+const Map = ({ cities }) => {
   const chartRef = useRef(null);
 
   useLayoutEffect(() => {
-    // Create root element
-    // https://www.amcharts.com/docs/v5/getting-started/#Root_element
     const root = am5.Root.new(chartRef.current);
-
-    // Set themes
-    // https://www.amcharts.com/docs/v5/concepts/themes/
     root.setThemes([am5themes_Animated.new(root)]);
 
-    // Create the map chart
-    // https://www.amcharts.com/docs/v5/charts/map-chart/
     const chart = root.container.children.push(
       am5map.MapChart.new(root, {
         panX: "rotateX",
@@ -28,9 +21,8 @@ const Map = ({ cities, handleCities }) => {
       })
     );
 
-    // Create series for background fill
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
-    var backgroundSeries = chart.series.push(
+    // Create background series for map
+    const backgroundSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {})
     );
     backgroundSeries.mapPolygons.template.setAll({
@@ -38,17 +30,13 @@ const Map = ({ cities, handleCities }) => {
       fillOpacity: 0.2,
       strokeOpacity: 0,
     });
-
-    // Add background polygo
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/#Background_polygon
     backgroundSeries.data.push({
       geometry: am5map.getGeoRectangle(90, 180, -90, -180),
     });
 
     chart.set("zoomControl", am5map.ZoomControl.new(root, {}));
 
-    // Create main polygon series for countries
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-polygon-series/
+    // Create polygon series for countries
     const polygonSeries = chart.series.push(
       am5map.MapPolygonSeries.new(root, {
         geoJSON: am5geodata_worldLow.default,
@@ -57,24 +45,20 @@ const Map = ({ cities, handleCities }) => {
     );
 
     polygonSeries.mapPolygons.template.setAll({
-      fill: root.interfaceColors.get("alternativeBackground"),
+      fill: am5.color(0xc2c0c0),
       fillOpacity: 0.15,
       strokeWidth: 0.5,
       stroke: root.interfaceColors.get("background"),
     });
 
-    polygonSeries.mapPolygons.template.setAll({
-      fill: am5.color(0xc2c0c0),
-    });
-
-    // Create point series for markers
-    // https://www.amcharts.com/docs/v5/charts/map-chart/map-point-series/
+    // Create clustered point series
     const pointSeries = chart.series.push(
-      am5map.ClusteredPointSeries.new(root, {})
+      am5map.ClusteredPointSeries.new(root, {
+        clusterRadius: 40, // Distance for clustering points
+      })
     );
 
-    // Set clustered bullet
-    // https://www.amcharts.com/docs/v5/charts/map-chart/clustered-point-series/#Group_bullet
+    // Set clustered bullet style
     pointSeries.set("clusteredBullet", function (root) {
       let container = am5.Container.new(root, {
         cursorOverStyle: "pointer",
@@ -126,9 +110,9 @@ const Map = ({ cities, handleCities }) => {
       });
     });
 
-    // Create regular bullets
+    // Create regular bullets (for individual markers)
     pointSeries.bullets.push(function () {
-      var circle = am5.Circle.new(root, {
+      const circle = am5.Circle.new(root, {
         radius: 6,
         tooltipY: 0,
         fill: am5.color(0xff8c00),
@@ -140,69 +124,23 @@ const Map = ({ cities, handleCities }) => {
       });
     });
 
-    // Set data
-    handleCities([
-      {
-        nickname: "Test",
-        location: "Ontario",
-        date: "2022-01-01",
-        latitude: 45.4235,
-        longitude: -75.6979,
-      },
-      {
-        nickname: "President",
-        location: "Washington D.C.",
-        date: "2022-01-01",
-        latitude: 38.8921,
-        longitude: -77.0241,
-      },
-      {
-        nickname: "President",
-        location: "Washington D.C.",
-        date: "2022-01-01",
-        latitude: 38.8921,
-        longitude: -77.0241,
-      },
-      {
-        nickname: "President",
-        location: "Washington D.C.",
-        date: "2022-01-01",
-        latitude: 38.8921,
-        longitude: -77.0241,
-      },
-      {
-        nickname: "President",
-        location: "Washington D.C.",
-        date: "2022-01-01",
-        latitude: 38.8921,
-        longitude: -77.0241,
-      },
-    ]);
-
-    for (var i = 0; i < cities.length; i++) {
-      var city = cities[i];
-      addCity(
-        city.nickname,
-        city.location,
-        city.date,
-        city.latitude,
-        city.longitude
-      );
-    }
-
-    function addCity(nickname, location, date, latitude, longitude) {
+    // Add cities data to the point series
+    cities.forEach((city) => {
       pointSeries.data.push({
-        nickname: nickname,
-        location: location,
-        date: date,
-        geometry: { type: "Point", coordinates: [longitude, latitude] },
+        nickname: city.name,
+        location: city.location,
+        date: city.date,
+        geometry: {
+          type: "Point",
+          coordinates: [city.longitude, city.latitude],
+        },
       });
-    }
+    });
 
     return () => {
       root.dispose();
     };
-  }, []);
+  }, [cities]);
 
   return <div id="chartdiv" ref={chartRef} />;
 };
