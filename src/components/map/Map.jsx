@@ -156,6 +156,27 @@ const Map = ({ cities, handleCities }) => {
         latitude: 38.8921,
         longitude: -77.0241,
       },
+      {
+        nickname: "President",
+        location: "Washington D.C.",
+        date: "2022-01-01",
+        latitude: 38.8921,
+        longitude: -77.0241,
+      },
+      {
+        nickname: "President",
+        location: "Washington D.C.",
+        date: "2022-01-01",
+        latitude: 38.8921,
+        longitude: -77.0241,
+      },
+      {
+        nickname: "President",
+        location: "Washington D.C.",
+        date: "2022-01-01",
+        latitude: 38.8921,
+        longitude: -77.0241,
+      },
     ]);
 
     for (var i = 0; i < cities.length; i++) {
