@@ -1,0 +1,13 @@
+name: Keep Supabase Alive
+
+on:
+  schedule:
+    - cron: "0 10 * * 2,4" # Tuesday and Thursday at 10AM UTC
+  workflow_dispatch:
+
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        run: curl -I https://efokzjkkbylaexqkcixo.supabase.co/rest/v1/
