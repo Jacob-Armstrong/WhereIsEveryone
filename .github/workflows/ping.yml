@@ -10,4 +10,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Ping Supabase
-        run: curl -I https://efokzjkkbylaexqkcixo.supabase.co/rest/v1/
+        run: curl -I ${{secrets.APIURL}} -H "${{secrets.APIKEY}}"
