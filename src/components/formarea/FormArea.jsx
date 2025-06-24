@@ -11,6 +11,11 @@ function FormArea({ supabase }) {
   const geocodeURL = "https://api.api-ninjas.com/v1/geocoding";
   const geocodeKey = import.meta.env.VITE_APININJA_API_KEY;
 
+  // Password authentication setup
+  const correctPassword = import.meta.env.VITE_FORM_PASSWORD;
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [passwordInput, setPasswordInput] = useState("");
+
   const [submissionData, setSubmissionData] = useState({
     name: "",
     location: "",
@@ -111,105 +116,130 @@ function FormArea({ supabase }) {
 
   return (
     <div className="form-area">
-      <h3>Add your own location!</h3>
-      {submissionData.name === "" && (
-        <form className="nickname-form" onSubmit={onNicknameSubmit}>
-          <div className="tooltip-div">
-            <Tooltip
-              title="Or first name, if privacy isn't an issue"
-              placement="top"
-              arrow
-            >
-              <img src={infoPng} />
-            </Tooltip>
-            <label htmlFor="name">Enter your nickname</label>
-          </div>
+      {!isAuthenticated ? (
+        <form
+          className="password-form"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (passwordInput === correctPassword) {
+              setIsAuthenticated(true);
+            } else {
+              alert("Incorrect password.");
+            }
+          }}
+        >
+          <label htmlFor="password">Enter password to add a location</label>
           <input
-            type="text"
-            minLength={1}
-            maxLength={20}
+            type="password"
+            value={passwordInput}
+            placeholder="••••••••"
+            onChange={(e) => setPasswordInput(e.target.value)}
             required
-            placeholder="John Smith"
           />
-          <button>Submit</button>
+          <button type="submit">Submit</button>
         </form>
-      )}
-      {submissionData.name !== "" && submissionData.location === "" && (
-        <form className="location-form" onSubmit={onLocationSubmit}>
-          <div className="city-region-div">
-            <div className="input-field">
+      ) : (
+        <>
+          <h3>Add your own location!</h3>
+          {submissionData.name === "" && (
+            <form className="nickname-form" onSubmit={onNicknameSubmit}>
               <div className="tooltip-div">
                 <Tooltip
-                  title="Or your actual city, if privacy isn't an issue"
+                  title="Or first name, if privacy isn't an issue"
                   placement="top"
                   arrow
                 >
                   <img src={infoPng} />
                 </Tooltip>
-                <label htmlFor="location">Nearest major city</label>
+                <label htmlFor="name">Enter your nickname</label>
               </div>
               <input
                 type="text"
                 minLength={1}
-                maxLength={50}
-                placeholder="San Francisco"
+                maxLength={20}
                 required
+                placeholder="John Smith"
               />
-            </div>
-            <div className="input-field">
-              <div className="tooltip-div">
-                <Tooltip
-                  title="If you are having trouble getting the right location, try adding a region"
-                  placement="top"
-                  arrow
-                >
-                  <img src={infoPng} />
-                </Tooltip>
-                <label htmlFor="region">State or Region (optional)</label>
+              <button>Submit</button>
+            </form>
+          )}
+          {submissionData.name !== "" && submissionData.location === "" && (
+            <form className="location-form" onSubmit={onLocationSubmit}>
+              <div className="city-region-div">
+                <div className="input-field">
+                  <div className="tooltip-div">
+                    <Tooltip
+                      title="Or your actual city, if privacy isn't an issue"
+                      placement="top"
+                      arrow
+                    >
+                      <img src={infoPng} />
+                    </Tooltip>
+                    <label htmlFor="location">Nearest major city</label>
+                  </div>
+                  <input
+                    type="text"
+                    minLength={1}
+                    maxLength={50}
+                    placeholder="San Francisco"
+                    required
+                  />
+                </div>
+                <div className="input-field">
+                  <div className="tooltip-div">
+                    <Tooltip
+                      title="If you are having trouble getting the right location, try adding a region"
+                      placement="top"
+                      arrow
+                    >
+                      <img src={infoPng} />
+                    </Tooltip>
+                    <label htmlFor="region">State or Region (optional)</label>
+                  </div>
+                  <input
+                    type="text"
+                    minLength={1}
+                    maxLength={50}
+                    placeholder="California"
+                  />
+                </div>
               </div>
-
-              <input
-                type="text"
-                minLength={1}
-                maxLength={50}
-                placeholder="California"
-              />
-            </div>
-          </div>
-          <div className="input-field">
-            <label htmlFor="region">Country</label>
-            <input
-              type="text"
-              minLength={1}
-              maxLength={50}
-              placeholder="United States"
-              required
-            />
-          </div>
-          <button>Submit</button>
-        </form>
-      )}
-      {submissionData.confirmed === "ask" && (
-        <div className="confirmation-container">
-          <div className="confirmations">
-            {submissionData.location.length > 0 ? (
-              submissionData.location.map((location) => (
-                <Confirmation
-                  key={location.name + location.state + location.country}
-                  location={location}
-                  confirmSubmission={onSubmissionConfirm}
-                  setSubmissionData={setSubmissionData}
-                  getSubmissionData={() => submissionData} // Pass a function to fetch the latest state
+              <div className="input-field">
+                <label htmlFor="region">Country</label>
+                <input
+                  type="text"
+                  minLength={1}
+                  maxLength={50}
+                  placeholder="United States"
+                  required
                 />
-              ))
-            ) : (
-              <p>No locations found.</p>
-            )}
-          </div>
-          <button className="decline-btn" onClick={onSubmissionDecline}>
-            Try again
-          </button>
-        </div>
+              </div>
+              <button>Submit</button>
+            </form>
+          )}
+          {submissionData.confirmed === "ask" && (
+            <div className="confirmation-container">
+              <div className="confirmations">
+                {submissionData.location.length > 0 ? (
+                  submissionData.location.map((location) => (
+                    <Confirmation
+                      key={location.name + location.state + location.country}
+                      location={location}
+                      confirmSubmission={onSubmissionConfirm}
+                      setSubmissionData={setSubmissionData}
+                      getSubmissionData={() => submissionData}
+                    />
+                  ))
+                ) : (
+                  <p>No locations found.</p>
+                )}
+              </div>
+              <button className="decline-btn" onClick={onSubmissionDecline}>
+                Try again
+              </button>
+            </div>
+          )}
+        </>
       )}
     </div>
   );
