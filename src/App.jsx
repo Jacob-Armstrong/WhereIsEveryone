@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { Analytics } from "@vercel/analytics/next"
+
 
 import Header from "./components/header/Header.jsx";
 import Map from "./components/map/Map.jsx";
