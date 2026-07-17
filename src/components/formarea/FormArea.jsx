@@ -6,7 +6,7 @@ import Confirmation from "./Confirmation.jsx";
 
 import "./FormArea.css";
 
-function FormArea({ supabase }) {
+function FormArea() {
   // Api ninjas setup
   const geocodeURL = "https://api.api-ninjas.com/v1/geocoding";
   const geocodeKey = import.meta.env.VITE_APININJA_API_KEY;
@@ -89,19 +89,25 @@ function FormArea({ supabase }) {
     });
 
     const { name, location, longitude, latitude } = updatedData;
-    const { data, error } = await supabase.from("locations").insert([
-      {
-        name,
-        location,
-        longitude,
-        latitude,
-        date: formattedDate,
-      },
-    ]);
+    try {
+      const res = await fetch("/api/locations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name,
+          location,
+          longitude,
+          latitude,
+          date: formattedDate,
+        }),
+      });
 
-    if (error) {
-      console.error(`Error: ${error.message}`);
-    } else {
+      if (!res.ok) {
+        console.error("Failed to save location:", await res.text());
+        return;
+      }
+
+      const data = await res.json();
       console.log(data);
       setSubmissionData({
         name: "",
@@ -111,6 +117,8 @@ function FormArea({ supabase }) {
         latitude: "",
         confirmed: "no",
       });
+    } catch (err) {
+      console.error(err);
     }
   }
 
